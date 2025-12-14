@@ -22,3 +22,8 @@ func TestPart1(t *testing.T) {
 	output := part1(input)
 	assert.Equal(t, 3, output)
 }
+
+func TestPart2(t *testing.T) {
+	output := part2(input)
+	assert.Equal(t, 14, output)
+}

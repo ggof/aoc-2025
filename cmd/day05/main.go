@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"sort"
 	"strconv"
 
 	"ggof.xyz/aoc2025/lib"
@@ -16,15 +17,6 @@ type pair struct {
 
 func between(p pair, i int) bool {
 	return p.a <= i && p.b >= i
-}
-
-func overlaps(a, b pair) (pair, bool) {
-	if a.b >= b.a && a.a <= b.b {
-		// ovelap exists
-
-	}
-
-	return pair{}, false
 }
 
 func part1(input []byte) int {
@@ -55,6 +47,12 @@ func part1(input []byte) int {
 	return total
 }
 
+type ByLen []pair
+
+func (b ByLen) Len() int               { return len(b) }
+func (b ByLen) Less(i int, j int) bool { return (b[i].b - b[i].a) > (b[j].b - b[j].a) }
+func (b ByLen) Swap(i int, j int)      { b[i], b[j] = b[j], b[i] }
+
 func part2(input []byte) int {
 	rangesStr, _, _ := bytes.Cut(input, []byte("\n\n"))
 	rangesParts := bytes.Split(bytes.TrimSuffix(rangesStr, []byte("\n")), []byte("\n"))
@@ -64,17 +62,30 @@ func part2(input []byte) int {
 		fmt.Sscanf(string(rp), "%d-%d", &ranges[i].a, &ranges[i].b)
 	}
 
-	var rangesWithoutOverlap []pair
-	for _, r := range ranges {
-
-		for _, rwo := range rangesWithoutOverlap {
-
-		}
-		fmt.Println("range has len", r.b - r.a)
-	}
+	// sort first by size of range to ensure the biggest ranges get treated first.
+	// Otherwise we'd have to split them when they get here and that's no fun.
+	sort.Sort(ByLen(ranges))
 
 	var total int
-	return total 
+	var rangesWithoutOverlap []pair
+	for _, r := range ranges {
+		for _, rwo := range rangesWithoutOverlap {
+			if between(rwo, r.a) {
+				r.a = min(rwo.b, r.b) + 1
+			}
+
+			if between(rwo, r.b) {
+				r.b = max(rwo.a, r.a) - 1
+			}
+		}
+
+		if r.a <= r.b {
+			total += r.b - r.a + 1
+			rangesWithoutOverlap = append(rangesWithoutOverlap, r)
+		}
+	}
+
+	return total
 }
 
 func main() {
@@ -82,5 +93,4 @@ func main() {
 	bs := lib.Must(io.ReadAll(file))
 	fmt.Println("part 1:", part1(bs))
 	fmt.Println("part 2:", part2(bs))
-
 }
