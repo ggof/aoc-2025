@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"time"
 
 	"ggof.xyz/aoc2025/lib"
 )
@@ -91,6 +92,12 @@ func part2(input []byte) int {
 func main() {
 	file := lib.Must(os.Open("inputs/day05.txt"))
 	bs := lib.Must(io.ReadAll(file))
-	fmt.Println("part 1:", part1(bs))
-	fmt.Println("part 2:", part2(bs))
+	start := time.Now()
+	p1 := part1(bs)
+	done1 := time.Now()
+	p2 := part2(bs)
+	done2 := time.Now()
+
+	fmt.Printf("part 1: %d in %s\n", p1, done1.Sub(start))
+	fmt.Printf("part 2: %d in %s\n", p2, done2.Sub(done1))
 }
