@@ -32,3 +32,8 @@ func TestPart1(t *testing.T) {
 	output := part1(strings.Split(input, "\n"), 10)
 	assert.Equal(t, 40, output)
 }
+
+func TestPart2(t *testing.T) {
+	output := part2(strings.Split(input, "\n"))
+	assert.Equal(t, 25272, output)
+}
